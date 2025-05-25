@@ -43,6 +43,19 @@
     .option-button.selected {
       background-color: #90caf9;
     }
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      scroll-snap-type: x mandatory;
+    }
+    .carousel img {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -64,9 +77,12 @@
 
       let frageNummer = 1;
 
+      const imageList = data.images.split(",").map(img => img.trim());
+
       const fragen = [
         {
           frage: `1. Hinweise: ${data.hinweise} Worum handelt es sich?`,
+          bilder: imageList,
           id: `frage${frageNummer++}`,
           options: data.optionen.name,
           korrekt: data.korrekteAntworten.name
@@ -87,7 +103,7 @@
           frage: "4. Bekämpfungsarten:",
           id: `frage${frageNummer++}`,
           options: data.optionen.bekaempfung.alle,
-          korrekt: data.optionen.bekaempfung.korrekt,
+          korrekt: data.korrekteAntworten.bekaempfung,
           multi: true
         },
         {
@@ -114,12 +130,24 @@
         p.textContent = f.frage;
         div.appendChild(p);
 
+        if (f.bilder) {
+          const carousel = document.createElement("div");
+          carousel.className = "carousel";
+          f.bilder.forEach(imgSrc => {
+            const img = document.createElement("img");
+            img.src = imgSrc;
+            img.alt = "Insektenbild";
+            carousel.appendChild(img);
+          });
+          div.appendChild(carousel);
+        }
+
         if (f.multi) {
           f.options.forEach(opt => {
             const btn = document.createElement("button");
             btn.className = "option-button";
-            btn.textContent = opt;
-            btn.onclick = () => toggleCheckbox(btn, opt);
+            btn.textContent = opt.trim();
+            btn.onclick = () => toggleCheckbox(btn, opt.trim());
             div.appendChild(btn);
           });
           const weiter = document.createElement("button");
@@ -130,8 +158,8 @@
           f.options.forEach(opt => {
             const btn = document.createElement("button");
             btn.className = "option-button";
-            btn.textContent = opt;
-            btn.onclick = () => checkAnswer(btn, f.id, opt);
+            btn.textContent = opt.trim();
+            btn.onclick = () => checkAnswer(btn, f.id, opt.trim(), f.korrekt);
             div.appendChild(btn);
           });
           if (f.optional) {
@@ -152,17 +180,12 @@
       quiz.appendChild(endDiv);
     }
 
-    function checkAnswer(button, id, value) {
-      const div = button.parentElement;
-      const frageNum = parseInt(id.replace("frage", ""));
-      const frage = [...div.querySelectorAll(".option-button")].map(b => b.textContent);
-      const korrekt = frage.includes(value) ? value : null;
-
-      if (button.textContent === korrekt) {
+    function checkAnswer(button, id, value, korrekt) {
+      if (value === korrekt) {
         button.classList.add("correct");
         setTimeout(() => {
-          div.classList.add("hidden");
-          const next = document.getElementById("frage" + (frageNum + 1));
+          document.getElementById(id).classList.add("hidden");
+          const next = document.getElementById("frage" + (parseInt(id.replace("frage", "")) + 1));
           if (next) next.classList.remove("hidden");
           else document.getElementById("quizEnde").classList.remove("hidden");
         }, 500);
@@ -191,18 +214,49 @@
     }
 
     function checkMultipleAnswer(id, correct) {
-      const allCorrect = correct.every(val => selectedMulti.includes(val)) && selectedMulti.every(val => correct.includes(val));
-      if (allCorrect) {
-        document.getElementById(id).classList.add("hidden");
-        const nextId = "frage" + (parseInt(id.replace("frage", "")) + 1);
-        document.getElementById(nextId).classList.remove("hidden");
-        selectedMulti = [];
-      } else {
-        alert("❌ Nicht alle richtigen Optionen ausgewählt.");
-      }
+      const div = document.getElementById(id);
+      const buttons = div.querySelectorAll(".option-button");
+      let allCorrect = true;
+
+      buttons.forEach(btn => {
+        const val = btn.textContent.trim();
+        if (correct.includes(val) && selectedMulti.includes(val)) {
+          btn.classList.add("correct");
+        } else if (correct.includes(val) && !selectedMulti.includes(val)) {
+          btn.classList.add("wrong");
+          allCorrect = false;
+        } else if (!correct.includes(val) && selectedMulti.includes(val)) {
+          btn.classList.add("wrong");
+          allCorrect = false;
+        }
+      });
+
+      setTimeout(() => {
+        if (allCorrect) {
+          div.classList.add("hidden");
+          const nextId = "frage" + (parseInt(id.replace("frage", "")) + 1);
+          document.getElementById(nextId).classList.remove("hidden");
+          selectedMulti = [];
+        } else {
+          alert("❌ Nicht alle richtigen Optionen ausgewählt.");
+        }
+      }, 800);
     }
 
-    loadCase("doerrobstmotte.json");
+    // Zufällige Auswahl einer JSON-Datei aus einer festen Liste
+    const jsonFiles = [
+      "doerrobstmotte.json",
+      "speckkaefer.json",
+      "brotkaefer.json"
+    ];
+
+    function getRandomFile(files) {
+      const index = Math.floor(Math.random() * files.length);
+      return files[index];
+    }
+
+    const zufallsDatei = getRandomFile(jsonFiles);
+    loadCase(zufallsDatei);
   </script>
 </body>
 </html>
