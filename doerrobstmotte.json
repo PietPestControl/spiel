@@ -1,12 +1,13 @@
 {
+  "images": "doerrobstmotte1.jpg, doerrobstmotte2.jpg, doerrobstmotte3.jpg, doerrobstmotte4.jpg",
   "hinweise": "Schmetterlingsart mit weiß-grauem Muster, Raupen fressen an Obst",
   "optionen": {
     "name": ["Dörrobstmotte", "Speckkäfer", "Brotkäfer"],
     "latein": ["Plodia interpunctella", "Dermestes lardarius", "Stegobium paniceum"],
     "entwicklung": ["holometabol", "hemimetabol", "ametabol"],
     "bekaempfung": {
-      "alle": ["mechanisch", "chemisch", "biologisch", "präventiv"],
-      "korrekt": ["mechanisch", "präventiv"]
+      "alle": ["mechanisch", " toxisch", "biologisch", "präventiv"],
+      "korrekt": ["toxisch", "präventiv"]
     },
     "wirkstoff": ["Pyrethrin", "Cypermethrin", "Fipronil"],
     "mittel": ["Detia Fliegenteufel", "Contrax D", "Fiprolux"]
