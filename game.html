@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schädlings-Detektivspiel – JSON-Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    .scene {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      background-color: #eaeaea;
+      transition: background-color 0.3s;
+    }
+    .hidden {
+      display: none;
+    }
+    .option-button.correct {
+      background-color: #c8e6c9 !important;
+    }
+    .option-button.wrong {
+      background-color: #ffcdd2 !important;
+    }
+    .option-button.selected {
+      background-color: #90caf9;
+    }
+  </style>
+</head>
+<body>
+  <h1>🕵️‍♂️ Detektivspiel: Schädlingsfall</h1>
+  <div id="quizContainer"></div>
+
+  <script>
+    let selectedMulti = [];
+
+    async function loadCase(file) {
+      const response = await fetch(file);
+      const data = await response.json();
+      buildQuiz(data);
+    }
+
+    function buildQuiz(data) {
+      const quiz = document.getElementById("quizContainer");
+      quiz.innerHTML = "";
+
+      let frageNummer = 1;
+
+      const fragen = [
+        {
+          frage: `1. Hinweise: ${data.hinweise} Worum handelt es sich?`,
+          id: `frage${frageNummer++}`,
+          options: data.optionen.name,
+          korrekt: data.korrekteAntworten.name
+        },
+        {
+          frage: "2. Lateinischer Name:",
+          id: `frage${frageNummer++}`,
+          options: data.optionen.latein,
+          korrekt: data.korrekteAntworten.latein
+        },
+        {
+          frage: "3. Entwicklungsform:",
+          id: `frage${frageNummer++}`,
+          options: data.optionen.entwicklung,
+          korrekt: data.korrekteAntworten.entwicklung
+        },
+        {
+          frage: "4. Bekämpfungsarten:",
+          id: `frage${frageNummer++}`,
+          options: data.optionen.bekaempfung.alle,
+          korrekt: data.optionen.bekaempfung.korrekt,
+          multi: true
+        },
+        {
+          frage: "5. Wirkstoff (optional):",
+          id: `frage${frageNummer++}`,
+          options: data.optionen.wirkstoff,
+          korrekt: data.korrekteAntworten.wirkstoff,
+          optional: true
+        },
+        {
+          frage: "6. Mittel:",
+          id: `frage${frageNummer++}`,
+          options: data.optionen.mittel,
+          korrekt: data.korrekteAntworten.mittel
+        }
+      ];
+
+      fragen.forEach((f, i) => {
+        const div = document.createElement("div");
+        div.className = `scene${i > 0 ? ' hidden' : ''}`;
+        div.id = f.id;
+
+        const p = document.createElement("p");
+        p.textContent = f.frage;
+        div.appendChild(p);
+
+        if (f.multi) {
+          f.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "option-button";
+            btn.textContent = opt;
+            btn.onclick = () => toggleCheckbox(btn, opt);
+            div.appendChild(btn);
+          });
+          const weiter = document.createElement("button");
+          weiter.textContent = "➡️ Weiter";
+          weiter.onclick = () => checkMultipleAnswer(f.id, f.korrekt);
+          div.appendChild(weiter);
+        } else {
+          f.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "option-button";
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(btn, f.id, opt);
+            div.appendChild(btn);
+          });
+          if (f.optional) {
+            const skip = document.createElement("button");
+            skip.textContent = "⏭️ Überspringen";
+            skip.onclick = () => skipQuestion(f.id);
+            div.appendChild(skip);
+          }
+        }
+
+        quiz.appendChild(div);
+      });
+
+      const endDiv = document.createElement("div");
+      endDiv.className = "scene hidden";
+      endDiv.id = "quizEnde";
+      endDiv.innerHTML = `<h2>🎉 Spiel beendet</h2><p>Du hast alle Fragen abgeschlossen!</p><button onclick="location.reload()">🔁 Neustart</button>`;
+      quiz.appendChild(endDiv);
+    }
+
+    function checkAnswer(button, id, value) {
+      const div = button.parentElement;
+      const frageNum = parseInt(id.replace("frage", ""));
+      const frage = [...div.querySelectorAll(".option-button")].map(b => b.textContent);
+      const korrekt = frage.includes(value) ? value : null;
+
+      if (button.textContent === korrekt) {
+        button.classList.add("correct");
+        setTimeout(() => {
+          div.classList.add("hidden");
+          const next = document.getElementById("frage" + (frageNum + 1));
+          if (next) next.classList.remove("hidden");
+          else document.getElementById("quizEnde").classList.remove("hidden");
+        }, 500);
+      } else {
+        button.classList.add("wrong");
+      }
+    }
+
+    function skipQuestion(id) {
+      const div = document.getElementById(id);
+      const frageNum = parseInt(id.replace("frage", ""));
+      div.classList.add("hidden");
+      const next = document.getElementById("frage" + (frageNum + 1));
+      if (next) next.classList.remove("hidden");
+      else document.getElementById("quizEnde").classList.remove("hidden");
+    }
+
+    function toggleCheckbox(button, value) {
+      if (selectedMulti.includes(value)) {
+        selectedMulti.splice(selectedMulti.indexOf(value), 1);
+        button.classList.remove("selected");
+      } else {
+        selectedMulti.push(value);
+        button.classList.add("selected");
+      }
+    }
+
+    function checkMultipleAnswer(id, correct) {
+      const allCorrect = correct.every(val => selectedMulti.includes(val)) && selectedMulti.every(val => correct.includes(val));
+      if (allCorrect) {
+        document.getElementById(id).classList.add("hidden");
+        const nextId = "frage" + (parseInt(id.replace("frage", "")) + 1);
+        document.getElementById(nextId).classList.remove("hidden");
+        selectedMulti = [];
+      } else {
+        alert("❌ Nicht alle richtigen Optionen ausgewählt.");
+      }
+    }
+
+    loadCase("doerrobstmotte.json");
+  </script>
+</body>
+</html>

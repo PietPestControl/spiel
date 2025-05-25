@@ -1,0 +1,21 @@
+{
+  "hinweise": "Schmetterlingsart mit weiß-grauem Muster, Raupen fressen an Obst",
+  "optionen": {
+    "name": ["Dörrobstmotte", "Speckkäfer", "Brotkäfer"],
+    "latein": ["Plodia interpunctella", "Dermestes lardarius", "Stegobium paniceum"],
+    "entwicklung": ["holometabol", "hemimetabol", "ametabol"],
+    "bekaempfung": {
+      "alle": ["mechanisch", "chemisch", "biologisch", "präventiv"],
+      "korrekt": ["mechanisch", "präventiv"]
+    },
+    "wirkstoff": ["Pyrethrin", "Cypermethrin", "Fipronil"],
+    "mittel": ["Detia Fliegenteufel", "Contrax D", "Fiprolux"]
+  },
+  "korrekteAntworten": {
+    "name": "Dörrobstmotte",
+    "latein": "Plodia interpunctella",
+    "entwicklung": "holometabol",
+    "wirkstoff": "Pyrethrin",
+    "mittel": "Detia Fliegenteufel"
+  }
+}
