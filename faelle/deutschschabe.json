@@ -1,26 +1,30 @@
 {
-  "bild": "images/deutschschabe.jpg",
+  "bilder": [
+    "images/deutsche_schabe.jpg",
+    "images/deutsche_schabe2.jpg",
+    "images/deutsche_schabe3.jpg",
+    "images/deutsche_schabe4.jpg"
+  ],
   "fragen": [
     {
       "frage": "Welcher Schädling ist das?",
-      "optionen": ["Deutsche Schabe", "Hausmaus", "Brotkäfer"],
-      "korrekt": "Deutsche Schabe"
+      "optionen": ["Hausmaus", "Wanderratte", "Feldmaus"],
+      "korrekt": "Hausmaus"
     },
     {
-      "frage": "Wie ist ihre Entwicklung?",
-      "optionen": ["hemimetabol", "holometabol", "anamorph"],
-      "korrekt": "hemimetabol"
+      "frage": "Wie entwickelt sich die Hausmaus?",
+      "optionen": ["Lebendgebärend", "Eiablage", "Puppenstadium"],
+      "korrekt": "Lebendgebärend"
     },
     {
       "frage": "Welche Eigenschaft trifft zu?",
-      "optionen": ["nachtaktiv, lichtscheu", "tagaktiv, fliegt oft", "frisst Getreide im Lager"],
-      "korrekt": "nachtaktiv, lichtscheu"
+      "optionen": ["kann gut klettern", "lebt im Wasser", "lebt nur draußen"],
+      "korrekt": "kann gut klettern"
     },
     {
       "frage": "Wie kann man sie bekämpfen?",
-      "optionen": ["Ködergel mit Wirkstoff", "Schlagfalle", "UV-Licht"],
-      "korrekt": "Ködergel mit Wirkstoff"
+      "optionen": ["Schlagfalle", "Lichtfallen", "Netze"],
+      "korrekt": "Schlagfalle"
     }
   ]
 }
-
