@@ -2,265 +2,106 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Schädlings-Detektivspiel – JSON-Demo</title>
+  <title>Schädlings-Detektivspiel</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      max-width: 700px;
-      margin: auto;
-    }
-    .scene {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-      background-color: #eaeaea;
-      transition: background-color 0.3s;
-    }
-    .hidden {
-      display: none;
-    }
-    .option-button.correct {
-      background-color: #c8e6c9 !important;
-    }
-    .option-button.wrong {
-      background-color: #ffcdd2 !important;
-    }
-    .option-button.selected {
-      background-color: #90caf9;
-    }
- .carousel {
-  display: flex;
-  overflow-x: auto;
-  gap: 10px;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 10px; /* Abstand unten, optional */
-}
-
-.carousel img {
-  scroll-snap-align: start;
-  flex-shrink: 0;
-  width: 120px;         /* feste Breite für kleine Bilder */
-  height: auto;         /* Höhe automatisch, damit Seitenverhältnis stimmt */
-  border-radius: 8px;
-  object-fit: contain;  /* Bild vollständig zeigen, ohne Verzerrung */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
+    img { max-width: 100%; margin-bottom: 1rem; }
+    .frage { margin: 1rem 0; }
+    .versteckt { display: none; }
+    .hinweis { color: orange; font-style: italic; }
+    .erfolg { color: green; font-weight: bold; }
+    .fehler { color: red; }
   </style>
 </head>
 <body>
-  <h1>🕵️‍♂️ Detektivspiel: Schädlingsfall</h1>
-  <div id="quizContainer"></div>
+  <h1>🔍 Schädlings-Detektivspiel</h1>
+  <div id="bild"></div>
+  <div class="frage" id="frage1"></div>
+  <div class="frage versteckt" id="frage2"></div>
+  <div class="frage versteckt" id="frage3"></div>
+  <div class="frage versteckt" id="frage4"></div>
+  <div id="hinweis" class="hinweis"></div>
+  <div id="nachricht"></div>
+  <button id="neustart" class="versteckt">🕵️ Neuer Fall</button>
 
   <script>
-    let selectedMulti = [];
-
-    async function loadCase(file) {
-      const response = await fetch(file);
-      const data = await response.json();
-      buildQuiz(data);
-    }
-
-    function buildQuiz(data) {
-      const quiz = document.getElementById("quizContainer");
-      quiz.innerHTML = "";
-
-      let frageNummer = 1;
-
-      const imageList = data.images.split(",").map(img => img.trim());
-
-      const fragen = [
-        {
-          frage: `1. Hinweise: ${data.hinweise} Worum handelt es sich?`,
-          bilder: imageList,
-          id: `frage${frageNummer++}`,
-          options: data.optionen.name,
-          korrekt: data.korrekteAntworten.name
-        },
-        {
-          frage: "2. Lateinischer Name:",
-          id: `frage${frageNummer++}`,
-          options: data.optionen.latein,
-          korrekt: data.korrekteAntworten.latein
-        },
-        {
-          frage: "3. Entwicklungsform:",
-          id: `frage${frageNummer++}`,
-          options: data.optionen.entwicklung,
-          korrekt: data.korrekteAntworten.entwicklung
-        },
-        {
-          frage: "4. Bekämpfungsarten:",
-          id: `frage${frageNummer++}`,
-          options: data.optionen.bekaempfung.alle,
-          korrekt: data.korrekteAntworten.bekaempfung,
-          multi: true
-        },
-        {
-          frage: "5. Wirkstoff (optional):",
-          id: `frage${frageNummer++}`,
-          options: data.optionen.wirkstoff,
-          korrekt: data.korrekteAntworten.wirkstoff,
-          optional: true
-        },
-        {
-          frage: "6. Mittel:",
-          id: `frage${frageNummer++}`,
-          options: data.optionen.mittel,
-          korrekt: data.korrekteAntworten.mittel
-        }
-      ];
-
-      fragen.forEach((f, i) => {
-        const div = document.createElement("div");
-        div.className = `scene${i > 0 ? ' hidden' : ''}`;
-        div.id = f.id;
-
-        const p = document.createElement("p");
-        p.textContent = f.frage;
-        div.appendChild(p);
-
-        if (f.bilder) {
-          const carousel = document.createElement("div");
-          carousel.className = "carousel";
-          f.bilder.forEach(imgSrc => {
-            const img = document.createElement("img");
-            img.src = imgSrc;
-            img.alt = "Insektenbild";
-            carousel.appendChild(img);
-          });
-          div.appendChild(carousel);
-        }
-
-        if (f.multi) {
-          f.options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "option-button";
-            btn.textContent = opt.trim();
-            btn.onclick = () => toggleCheckbox(btn, opt.trim());
-            div.appendChild(btn);
-          });
-          const weiter = document.createElement("button");
-          weiter.textContent = "➡️ Weiter";
-          weiter.onclick = () => checkMultipleAnswer(f.id, f.korrekt);
-          div.appendChild(weiter);
-        } else {
-          f.options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "option-button";
-            btn.textContent = opt.trim();
-            btn.onclick = () => checkAnswer(btn, f.id, opt.trim(), f.korrekt);
-            div.appendChild(btn);
-          });
-          if (f.optional) {
-            const skip = document.createElement("button");
-            skip.textContent = "⏭️ Überspringen";
-            skip.onclick = () => skipQuestion(f.id);
-            div.appendChild(skip);
-          }
-        }
-
-        quiz.appendChild(div);
-      });
-
-      const endDiv = document.createElement("div");
-      endDiv.className = "scene hidden";
-      endDiv.id = "quizEnde";
-      endDiv.innerHTML = `<h2>🎉 Spiel beendet</h2><p>Du hast alle Fragen abgeschlossen!</p><button onclick="location.reload()">🔁 Neustart</button>`;
-      quiz.appendChild(endDiv);
-    }
-
-    function checkAnswer(button, id, value, korrekt) {
-      if (value === korrekt) {
-        button.classList.add("correct");
-        setTimeout(() => {
-          document.getElementById(id).classList.add("hidden");
-          const next = document.getElementById("frage" + (parseInt(id.replace("frage", "")) + 1));
-          if (next) next.classList.remove("hidden");
-          else document.getElementById("quizEnde").classList.remove("hidden");
-        }, 500);
-      } else {
-        button.classList.add("wrong");
-      }
-    }
-
-    function skipQuestion(id) {
-      const div = document.getElementById(id);
-      const frageNum = parseInt(id.replace("frage", ""));
-      div.classList.add("hidden");
-      const next = document.getElementById("frage" + (frageNum + 1));
-      if (next) next.classList.remove("hidden");
-      else document.getElementById("quizEnde").classList.remove("hidden");
-    }
-
-    function toggleCheckbox(button, value) {
-      if (selectedMulti.includes(value)) {
-        selectedMulti.splice(selectedMulti.indexOf(value), 1);
-        button.classList.remove("selected");
-      } else {
-        selectedMulti.push(value);
-        button.classList.add("selected");
-      }
-    }
-
-    function checkMultipleAnswer(id, correct) {
-      const div = document.getElementById(id);
-      const buttons = div.querySelectorAll(".option-button");
-      let allCorrect = true;
-
-      buttons.forEach(btn => {
-        const val = btn.textContent.trim();
-        if (correct.includes(val) && selectedMulti.includes(val)) {
-          btn.classList.add("correct");
-        } else if (correct.includes(val) && !selectedMulti.includes(val)) {
-          btn.classList.add("wrong");
-          allCorrect = false;
-        } else if (!correct.includes(val) && selectedMulti.includes(val)) {
-          btn.classList.add("wrong");
-          allCorrect = false;
-        }
-      });
-
-      setTimeout(() => {
-        if (allCorrect) {
-          div.classList.add("hidden");
-          const nextId = "frage" + (parseInt(id.replace("frage", "")) + 1);
-          document.getElementById(nextId).classList.remove("hidden");
-          selectedMulti = [];
-        } else {
-          alert("❌ Nicht alle richtigen Optionen ausgewählt.");
-        }
-      }, 800);
-    }
-
-    // Zufällige Auswahl einer JSON-Datei aus einer festen Liste
-    const jsonFiles = [
-      "doerrobstmotte.json",
-      "speckkaefer.json",
-      "brotkaefer.json"
+    let aktuellerFall = null;
+    let schritte = 0;
+    const hinweise = [
+      "Tipp: Achte auf typische Merkmale im Bild.",
+      "Tipp: Manche Arten leben verborgen oder nachtaktiv.",
+      "Tipp: Wirkstoffköder wirken bei Nagern besonders gut.",
+      "Tipp: Bei Insekten helfen Spritzmittel oder Ködergel."
     ];
 
-    function getRandomFile(files) {
-      const index = Math.floor(Math.random() * files.length);
-      return files[index];
+    let remainingFiles = ["faelle/deutschschabe.json", "faelle/hausmaus.json"];
+    let usedFiles = [];
+
+    function ladeFall() {
+      if (remainingFiles.length === 0) {
+        remainingFiles = usedFiles;
+        usedFiles = [];
+      }
+
+      const zufallsIndex = Math.floor(Math.random() * remainingFiles.length);
+      const datei = remainingFiles.splice(zufallsIndex, 1)[0];
+      usedFiles.push(datei);
+
+      fetch(datei)
+        .then(res => res.json())
+        .then(fall => {
+          aktuellerFall = fall;
+          schritte = 0;
+          zeigeFall();
+        });
     }
 
-    const zufallsDatei = getRandomFile(jsonFiles);
-    loadCase(zufallsDatei);
+    function zeigeFall() {
+      document.getElementById("bild").innerHTML = `<img src="${aktuellerFall.bild}" alt="Schädlingsbild">`;
+      document.getElementById("nachricht").innerText = "";
+      document.getElementById("hinweis").innerText = hinweise[schritte] || "";
+
+      zeigeFrage("frage1", aktuellerFall.fragen[0], 0);
+    }
+
+    function zeigeFrage(id, frageObjekt, nr) {
+      const container = document.getElementById(id);
+      container.classList.remove("versteckt");
+      container.innerHTML = `<strong>${frageObjekt.frage}</strong><br>`;
+      frageObjekt.optionen.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => prüfeAntwort(opt, nr);
+        container.appendChild(btn);
+      });
+    }
+
+    function prüfeAntwort(antwort, nr) {
+      const korrekt = aktuellerFall.fragen[nr].korrekt;
+      if (antwort === korrekt) {
+        schritte++;
+        if (schritte < aktuellerFall.fragen.length) {
+          document.getElementById(`frage${schritte}`).classList.remove("versteckt");
+          document.getElementById("hinweis").innerText = hinweise[schritte] || "";
+        } else {
+          document.getElementById("nachricht").innerHTML = `<p class="erfolg">✅ Fall gelöst! Gut gemacht!</p>`;
+          document.getElementById("neustart").classList.remove("versteckt");
+        }
+      } else {
+        document.getElementById("nachricht").innerHTML = `<p class="fehler">❌ Das war nicht korrekt. Versuch es erneut.</p>`;
+      }
+    }
+
+    document.getElementById("neustart").onclick = () => {
+      document.getElementById("frage1").classList.add("versteckt");
+      document.getElementById("frage2").classList.add("versteckt");
+      document.getElementById("frage3").classList.add("versteckt");
+      document.getElementById("frage4").classList.add("versteckt");
+      document.getElementById("neustart").classList.add("versteckt");
+      ladeFall();
+    };
+
+    ladeFall();
   </script>
 </body>
 </html>
