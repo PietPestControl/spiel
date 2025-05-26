@@ -3,103 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detektivspiel Schädlingsbekämpfung</title>
+  <title>Schädlingsdetektiv</title>
   <style>
     body {
       font-family: sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: #f4f4f4;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 1rem;
+
+    h1 {
+      text-align: center;
     }
-    .carousel {
+
+    #carousel-container {
       position: relative;
       overflow: hidden;
       width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      touch-action: pan-y;
+      background: white;
       border-radius: 10px;
     }
-    .carousel-track {
+
+    #carousel-track {
       display: flex;
       transition: transform 0.3s ease-in-out;
-      width: 400%;
     }
-    .carousel img {
-      width: 100%;
-      flex-shrink: 0;
+
+    #carousel-track img {
+      min-width: 100%;
       height: auto;
-      object-fit: cover;
+      object-fit: contain;
+      border-radius: 10px;
     }
-    .carousel-dots {
+
+    #carousel-dots {
       text-align: center;
-      margin-top: 0.5rem;
+      margin-top: 10px;
     }
+
     .carousel-dot {
       display: inline-block;
       width: 10px;
       height: 10px;
-      margin: 0 4px;
-      background: #ccc;
+      margin: 0 5px;
+      background-color: #bbb;
       border-radius: 50%;
       cursor: pointer;
     }
+
     .carousel-dot.active {
-      background: #333;
+      background-color: #333;
     }
-    .frage {
-      margin-top: 1rem;
+
+    #frageContainer {
       background: white;
-      padding: 1rem;
+      padding: 15px;
       border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 20px auto;
     }
-    button {
+
+    .antwort {
       display: block;
-      width: 100%;
+      margin: 10px 0;
       padding: 10px;
-      margin-top: 0.5rem;
-      border: none;
+      background: #eee;
       border-radius: 5px;
-      background: #ddd;
-      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      text-align: left;
     }
-    button:hover {
-      background: #ccc;
+
+    .antwort:hover {
+      background-color: #ddd;
     }
+
     #naechsterFall {
-      margin-top: 1.5rem;
+      display: none;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
       background: #4caf50;
       color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #naechsterFall:hover {
+      background: #45a049;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="carousel">
-      <div class="carousel-track" id="carousel-track"></div>
-    </div>
-    <div class="carousel-dots" id="carousel-dots"></div>
+  <h1>🔍 Schädlingsdetektiv</h1>
 
-    <div class="frage" id="fragebereich">
-      <h2 id="frage"></h2>
-      <div id="antworten"></div>
-    </div>
-
-    <button id="naechsterFall" style="display:none;">Nächster Fall</button>
+  <div id="carousel-container">
+    <div id="carousel-track"></div>
+    <div id="carousel-dots"></div>
   </div>
+
+  <div id="frageContainer"></div>
+  <button id="naechsterFall">Nächster Fall</button>
 
   <script>
     let aktuellerFall, aktuelleFrage = 0;
     let bilder = [], fragen = [];
+    let aktuellerSlide = 0;
 
     async function ladeFall() {
       aktuelleFrage = 0;
+      document.getElementById("naechsterFall").style.display = "none";
+
       const dateien = await fetch("faelle/index.json").then(r => r.json());
       const zufall = dateien[Math.floor(Math.random() * dateien.length)];
       aktuellerFall = await fetch("faelle/" + zufall).then(r => r.json());
+
       bilder = aktuellerFall.bilder;
       fragen = aktuellerFall.fragen;
       zeigeBilder();
@@ -124,66 +147,69 @@
         dots.appendChild(dot);
       });
 
-      zeigeSlide(0);
-
-      // Touch für Wischen
-      let startX = 0;
-      track.addEventListener("touchstart", e => startX = e.touches[0].clientX);
-      track.addEventListener("touchend", e => {
-        const deltaX = e.changedTouches[0].clientX - startX;
-        if (Math.abs(deltaX) > 50) {
-          let neuerIndex = aktuellerIndex + (deltaX < 0 ? 1 : -1);
-          zeigeSlide(neuerIndex);
-        }
-      });
+      zeigeSlide(0); // Start mit Bild 0
     }
-
-    let aktuellerIndex = 0;
 
     function zeigeSlide(index) {
       const track = document.getElementById("carousel-track");
       const dots = document.querySelectorAll(".carousel-dot");
-      if (index < 0) index = 0;
-      if (index >= bilder.length) index = bilder.length - 1;
-      aktuellerIndex = index;
+      aktuellerSlide = index;
       track.style.transform = `translateX(-${index * 100}%)`;
-      dots.forEach((dot, i) => {
-        dot.classList.toggle("active", i === index);
-      });
+
+      dots.forEach(dot => dot.classList.remove("active"));
+      dots[index].classList.add("active");
     }
+
+    document.getElementById("carousel-container").addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    document.getElementById("carousel-container").addEventListener("touchend", e => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && aktuellerSlide < bilder.length - 1) {
+          zeigeSlide(aktuellerSlide + 1);
+        } else if (diff < 0 && aktuellerSlide > 0) {
+          zeigeSlide(aktuellerSlide - 1);
+        }
+      }
+    }, { passive: true });
 
     function zeigeFrage() {
-      const frage = fragen[aktuelleFrage];
-      document.getElementById("frage").innerText = frage.frage;
-      const antwortenDiv = document.getElementById("antworten");
-      antwortenDiv.innerHTML = "";
+      const container = document.getElementById("frageContainer");
+      container.innerHTML = "";
 
-      frage.optionen.forEach(opt => {
+      if (aktuelleFrage >= fragen.length) {
+        container.innerHTML = "<p>✅ Fall gelöst!</p>";
+        document.getElementById("naechsterFall").style.display = "block";
+        return;
+      }
+
+      const frage = fragen[aktuelleFrage];
+      const frageText = document.createElement("p");
+      frageText.textContent = frage.frage;
+      container.appendChild(frageText);
+
+      frage.antworten.forEach((antwort, index) => {
         const btn = document.createElement("button");
-        btn.innerText = opt;
-        btn.onclick = () => {
-          if (opt === frage.korrekt) {
-            btn.style.background = "lightgreen";
+        btn.textContent = antwort.text;
+        btn.className = "antwort";
+        btn.addEventListener("click", () => {
+          if (antwort.richtig) {
             aktuelleFrage++;
-            if (aktuelleFrage < fragen.length) {
-              setTimeout(zeigeFrage, 1000);
-            } else {
-              document.getElementById("naechsterFall").style.display = "block";
-            }
+            zeigeFrage();
           } else {
-            btn.style.background = "salmon";
+            alert("❌ Leider falsch. Versuch's nochmal!");
           }
-        };
-        antwortenDiv.appendChild(btn);
+        });
+        container.appendChild(btn);
       });
     }
 
-    document.getElementById("naechsterFall").onclick = () => {
-      document.getElementById("naechsterFall").style.display = "none";
-      ladeFall();
-    };
+    document.getElementById("naechsterFall").addEventListener("click", ladeFall);
 
-    ladeFall();
+    ladeFall(); // beim Start laden
   </script>
 </body>
 </html>
