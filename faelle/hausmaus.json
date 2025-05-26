@@ -1,0 +1,25 @@
+{
+  "bild": "images/hausmaus.jpg",
+  "fragen": [
+    {
+      "frage": "Welcher Schädling ist das?",
+      "optionen": ["Hausmaus", "Wanderratte", "Deutsche Schabe"],
+      "korrekt": "Hausmaus"
+    },
+    {
+      "frage": "Wie ist ihre Entwicklung?",
+      "optionen": ["lebendgebärend, Nesthocker", "holometabol", "hemimetabol"],
+      "korrekt": "lebendgebärend, Nesthocker"
+    },
+    {
+      "frage": "Welche Eigenschaft trifft zu?",
+      "optionen": ["nagt an Kabeln", "frisst Holz", "lebt in stehenden Gewässern"],
+      "korrekt": "nagt an Kabeln"
+    },
+    {
+      "frage": "Wie kann man sie bekämpfen?",
+      "optionen": ["Schlagfalle", "Sprühmittel", "UV-Falle"],
+      "korrekt": "Schlagfalle"
+    }
+  ]
+}
