@@ -1,1 +1,26 @@
+{
+  "bild": "images/deutschschabe.jpg",
+  "fragen": [
+    {
+      "frage": "Welcher Schädling ist das?",
+      "optionen": ["Deutsche Schabe", "Hausmaus", "Brotkäfer"],
+      "korrekt": "Deutsche Schabe"
+    },
+    {
+      "frage": "Wie ist ihre Entwicklung?",
+      "optionen": ["hemimetabol", "holometabol", "anamorph"],
+      "korrekt": "hemimetabol"
+    },
+    {
+      "frage": "Welche Eigenschaft trifft zu?",
+      "optionen": ["nachtaktiv, lichtscheu", "tagaktiv, fliegt oft", "frisst Getreide im Lager"],
+      "korrekt": "nachtaktiv, lichtscheu"
+    },
+    {
+      "frage": "Wie kann man sie bekämpfen?",
+      "optionen": ["Ködergel mit Wirkstoff", "Schlagfalle", "UV-Licht"],
+      "korrekt": "Ködergel mit Wirkstoff"
+    }
+  ]
+}
 
