@@ -1,22 +1,30 @@
 {
-  "images": "doerrobstmotte1.jpg, doerrobstmotte2.jpg, doerrobstmotte3.jpg, doerrobstmotte4.jpg",
-  "hinweise": "Schmetterlingsart mit weiß-grauem Muster, Raupen fressen an Obst",
-  "optionen": {
-    "name": ["Dörrobstmotte", "Speckkäfer", "Brotkäfer"],
-    "latein": ["Plodia interpunctella", "Dermestes lardarius", "Stegobium paniceum"],
-    "entwicklung": ["holometabol", "hemimetabol", "ametabol"],
-    "bekaempfung": {
-      "alle": ["mechanisch", " toxisch", "biologisch", "präventiv"],
-      "korrekt": ["toxisch", "präventiv"]
+  "bilder": [
+    "images/doerrobstmotte.jpg",
+    "images/doerrobstmotte2.jpg",
+    "images/doerrobstmotte3.jpg",
+    "images/doerrobstmotte4.jpg"
+  ],
+  "fragen": [
+    {
+      "frage": "Welcher Schädling ist das?",
+      "optionen": ["Hausmaus", "Wanderratte", "Feldmaus"],
+      "korrekt": "Hausmaus"
     },
-    "wirkstoff": ["Pyrethrin", "Cypermethrin", "Fipronil"],
-    "mittel": ["Detia Fliegenteufel", "Contrax D", "Fiprolux"]
-  },
-  "korrekteAntworten": {
-    "name": "Dörrobstmotte",
-    "latein": "Plodia interpunctella",
-    "entwicklung": "holometabol",
-    "wirkstoff": "Pyrethrin",
-    "mittel": "Detia Fliegenteufel"
-  }
+    {
+      "frage": "Wie entwickelt sich die Hausmaus?",
+      "optionen": ["Lebendgebärend", "Eiablage", "Puppenstadium"],
+      "korrekt": "Lebendgebärend"
+    },
+    {
+      "frage": "Welche Eigenschaft trifft zu?",
+      "optionen": ["kann gut klettern", "lebt im Wasser", "lebt nur draußen"],
+      "korrekt": "kann gut klettern"
+    },
+    {
+      "frage": "Wie kann man sie bekämpfen?",
+      "optionen": ["Schlagfalle", "Lichtfallen", "Netze"],
+      "korrekt": "Schlagfalle"
+    }
+  ]
 }
