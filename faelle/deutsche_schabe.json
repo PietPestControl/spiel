@@ -8,23 +8,23 @@
   "fragen": [
     {
       "frage": "Welcher Schädling ist das?",
-      "optionen": ["Hausmaus", "Wanderratte", "Feldmaus"],
-      "korrekt": "Hausmaus"
+      "optionen": ["Deutsche Schabe", "Orientalische Schabe", "Braunbandschabe"],
+      "korrekt": "deutsche Schabe"
     },
     {
-      "frage": "Wie entwickelt sich die Hausmaus?",
-      "optionen": ["Lebendgebärend", "Eiablage", "Puppenstadium"],
-      "korrekt": "Lebendgebärend"
+      "frage": "Wie entwickelt sich sich?",
+      "optionen": ["holometabol", "hemimetabol", "a-metabol"],
+      "korrekt": "hemimetabol"
     },
     {
       "frage": "Welche Eigenschaft trifft zu?",
-      "optionen": ["kann gut klettern", "lebt im Wasser", "lebt nur draußen"],
-      "korrekt": "kann gut klettern"
+      "optionen": ["kann gut klettern", "lebt in der nähe Wasser", "lebt nur draußen"],
+      "korrekt": "kann gut klettern", "lebt in der nähe von Wasser"
     },
     {
       "frage": "Wie kann man sie bekämpfen?",
-      "optionen": ["Schlagfalle", "Lichtfallen", "Netze"],
-      "korrekt": "Schlagfalle"
+      "optionen": ["reinigen", "Lichtfallen", "Gelverfahren"],
+      "korrekt": "Gelverfahren", 
     }
   ]
 }
