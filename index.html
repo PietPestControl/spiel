@@ -8,12 +8,14 @@
     body {
       font-family: sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 10px;
       background: #f4f4f4;
+      font-size: 18px;
     }
 
     h1 {
       text-align: center;
+      font-size: 28px;
     }
 
     #carousel-container {
@@ -21,20 +23,21 @@
       overflow: hidden;
       width: 100%;
       max-width: 600px;
+      height: 300px;
       margin: 20px auto;
-      touch-action: pan-y;
       background: white;
       border-radius: 10px;
     }
 
     #carousel-track {
       display: flex;
+      height: 100%;
       transition: transform 0.3s ease-in-out;
     }
 
     #carousel-track img {
       min-width: 100%;
-      height: auto;
+      height: 100%;
       object-fit: contain;
       border-radius: 10px;
     }
@@ -46,8 +49,8 @@
 
     .carousel-dot {
       display: inline-block;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       margin: 0 5px;
       background-color: #bbb;
       border-radius: 50%;
@@ -64,18 +67,20 @@
       border-radius: 10px;
       max-width: 600px;
       margin: 20px auto;
+      font-size: 20px;
     }
 
     .antwort {
       display: block;
-      margin: 10px 0;
-      padding: 10px;
+      margin: 12px 0;
+      padding: 14px;
       background: #eee;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       border: none;
       width: 100%;
       text-align: left;
+      font-size: 18px;
     }
 
     .antwort:hover {
@@ -85,12 +90,12 @@
     #naechsterFall {
       display: none;
       margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 12px 24px;
+      font-size: 18px;
       background: #4caf50;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
@@ -147,7 +152,7 @@
         dots.appendChild(dot);
       });
 
-      zeigeSlide(0); // Start mit Bild 0
+      zeigeSlide(0);
     }
 
     function zeigeSlide(index) {
@@ -160,37 +165,7 @@
       dots[index].classList.add("active");
     }
 
-    function zeigeFrage() {
-      const container = document.getElementById("frageContainer");
-      container.innerHTML = "";
-
-      if (aktuelleFrage >= fragen.length) {
-        container.innerHTML = "<p>✅ Fall gelöst!</p>";
-        document.getElementById("naechsterFall").style.display = "block";
-        return;
-      }
-
-      const frage = fragen[aktuelleFrage];
-      const frageText = document.createElement("p");
-      frageText.textContent = frage.frage;
-      container.appendChild(frageText);
-
-      frage.optionen.forEach((option) => {
-        const btn = document.createElement("button");
-        btn.textContent = option;
-        btn.className = "antwort";
-        btn.addEventListener("click", () => {
-          if (option === frage.korrekt) {
-            aktuelleFrage++;
-            zeigeFrage();
-          } else {
-            alert("❌ Leider falsch. Versuch's nochmal!");
-          }
-        });
-        container.appendChild(btn);
-      });
-    }
-
+    let startX = 0;
     document.getElementById("carousel-container").addEventListener("touchstart", e => {
       startX = e.touches[0].clientX;
     }, { passive: true });
@@ -207,9 +182,39 @@
       }
     }, { passive: true });
 
-    document.getElementById("naechsterFall").addEventListener("click", ladeFall);
+    function zeigeFrage() {
+      const container = document.getElementById("frageContainer");
+      container.innerHTML = "";
 
-    ladeFall(); // Start beim Laden
+      if (aktuelleFrage >= fragen.length) {
+        container.innerHTML = "<p>✅ Fall gelöst!</p>";
+        document.getElementById("naechsterFall").style.display = "block";
+        return;
+      }
+
+      const frage = fragen[aktuelleFrage];
+      const frageText = document.createElement("p");
+      frageText.textContent = frage.frage;
+      container.appendChild(frageText);
+
+      frage.optionen.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.className = "antwort";
+        btn.addEventListener("click", () => {
+          if (option === frage.korrekt) {
+            aktuelleFrage++;
+            zeigeFrage();
+          } else {
+            alert("❌ Leider falsch. Versuch's nochmal!");
+          }
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    document.getElementById("naechsterFall").addEventListener("click", ladeFall);
+    ladeFall();
   </script>
 </body>
 </html>
